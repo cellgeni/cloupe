@@ -11,7 +11,7 @@ authors = [
 ]
 description = "Cloupe Parser"
 readme = "README.md"
-requires-python = ">=3.9.6"
+requires-python = ">=3.9"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
