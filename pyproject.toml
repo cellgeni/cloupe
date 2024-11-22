@@ -21,5 +21,5 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/cellgeni/cloupe/tree/main"
+Homepage = "https://github.com/cellgeni/cloupe"
 Issues = "https://github.com/cellgeni/cloupe/issues"
