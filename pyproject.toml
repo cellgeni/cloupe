@@ -6,7 +6,8 @@ build-backend = "hatchling.build"
 name = "cloupe"
 version = "0.1.0"
 authors = [
-  { name="Nithin", email="nj9@sanger.ac.uk" },
+    { name="Martin Prete", email="martin.prete@sanger.ac.uk" },
+    { name="Nithin Mathew Joseph", email="nithin.mathew.joseph@sanger.ac.uk" },
 ]
 description = "Cloupe Parser"
 readme = "README.md"
