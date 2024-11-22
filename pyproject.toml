@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "cloupe_package_nj9"
+name = "cloupe"
 version = "0.0.1"
 authors = [
   { name="Nithin", email="nj9@sanger.ac.uk" },
