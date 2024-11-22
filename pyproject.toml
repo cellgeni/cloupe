@@ -9,6 +9,7 @@ authors = [
     { name="Martin Prete", email="martin.prete@sanger.ac.uk" },
     { name="Nithin Mathew Joseph", email="nithin.mathew.joseph@sanger.ac.uk" },
 ]
+license = {file = "LICENSE"}
 description = "Cloupe Parser"
 readme = "README.md"
 requires-python = ">=3.9"
