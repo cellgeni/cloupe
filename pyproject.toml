@@ -1,0 +1,21 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cloupe_package_nj9"
+version = "0.0.1"
+authors = [
+  { name="Nithin", email="nj9@sanger.ac.uk" },
+]
+description = "Cloupe Parser"
+readme = "README.md"
+requires-python = ">=3.9.6"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/cellgeni/cloupe/tree/main"
+Issues = "https://github.com/cellgeni/cloupe/issues"
