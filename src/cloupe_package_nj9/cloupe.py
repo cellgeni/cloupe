@@ -1,10 +1,9 @@
 import os
-import re
+import csv
 import json
 import logging
 import struct
 import zlib
-import argparse
 import matplotlib.pyplot as plt
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
@@ -19,6 +18,7 @@ import matplotlib.image as mpimg
 class Cloupe(object):
 
     def __init__(self, cloupe_path):
+        self.cwd = os.getcwd()
         self.cloupe_path = cloupe_path
 
         # read main header this is a json that has basic info
@@ -192,76 +192,63 @@ class Cloupe(object):
                 return json.loads(block.decode("utf-8", errors="replace"))
             return block
 
+    # writing the barcodes to the csv file
+    def barcodes_writer(self):
+        barcodes_attributes = vars(self)  # returns a dictionary of attributes
+        barcodes = self.cwd + '/barcodes.csv'
+        with open(barcodes, 'w', newline="") as barcodes_file:
+            # Initialize the CSV writer
+            csv_writer = csv.writer(barcodes_file)
+            csv_writer.writerow(["Barcodes"])
+            csv_writer.writerows(
+                    [[element] for element in barcodes_attributes["matrices"][0]['Barcodes'][:barcodes_attributes["matrices"][0]['BarcodeCount']]]
+            )  # Efficient one line code
+
+    # write the features to the csv file
+    def features_writer(self):
+        features_attributes = vars(self)
+        features = self.cwd + '/features.csv'
+        with open(features, 'w', newline="") as features_file:
+            csv_writer = csv.writer(features_file)
+            csv_writer.writerow(["FeatureIds", "FeatureNames"])
+            csv_writer.writerows([[str(element) for element in pair]  # Remove parentheses, single quotes, and spaces
+                        for pair in zip(
+                        features_attributes["matrices"][0]["FeatureIds"][:features_attributes["matrices"][0]["FeatureCount"]],
+                        features_attributes["matrices"][0]["FeatureNames"][:features_attributes["matrices"][0]["FeatureCount"]],
+                    )])# Using zip command along with list comprehension to convert the two list into strings for the csv as elements
+
+    # write annotations
+    def annotations_writer(self):
+        annotations_attributes = vars(self)
+        annotations = self.cwd + '/annotations.csv'
+        with open(annotations, 'w', newline="") as annotations_file:
+            csv_writer = csv.writer(annotations_file)
+            csv_writer.writerow(["Barcodes"]+[element["Name"] for element in annotations_attributes["celltracks"]])
+            csv_writer.writerows(
+                [
+                    [barcode, *values]
+                    for barcode, *values in zip(
+                    annotations_attributes["matrices"][0]["Barcodes"],
+                    *(track["Values"] for track in annotations_attributes["celltracks"])
+                )
+                ]
+            )
+
+    # plotting the spatial info
+    def spatial_plot(self):
+        spatial_plot_attributes = vars(self)
+        spatial_embedding = spatial_plot_attributes["projections"]['Spatial']
+        plt.scatter(x=spatial_embedding[0], y=spatial_embedding[1])
+        plt.gca().invert_yaxis()
+        plt.show()
+
 
 if __name__=="__main__":
     logging.basicConfig(level=logging.INFO, format="[%(asctime)s][%(levelname)s] %(message)s")
-    # Create the parser
-    parser = argparse.ArgumentParser(description='Cloupe parser which extracts Barcodes, Features and Annotations info')
-    # Add arguments
-    parser.add_argument('input_file', type=str, help='Path to the input file')
-    # Parse the arguments
-    args = parser.parse_args()
-    # Access the arguments
-    # Load cloupe file
-    cwd = os.getcwd()
-    # hardcoding the location of the files that are generated out of the script
-    barcodes = cwd + '/barcodes.csv'
-    features = cwd + '/features.csv'
-    barcode_clusters = cwd + '/annotations.csv'
-    cloupe = Cloupe(args.input_file)
-
-    count_values = {}
-    # Getting the count of Features and Barcodes to set the limits for the columns in the csv files
-    for prop in ['FeatureCount', 'BarcodeCount']:
-        count_values[prop] = cloupe.matrices[0][prop]
-
-
-    collection = []
-    # writing the barcodes to the csv files
-    with open(barcodes, 'w') as barcodes_file:
-        barcodes_file.write("Barcodes\n")
-        barcodes_file.write(
-            "\n".join(
-            cloupe.matrices[0]['Barcodes'][:count_values['BarcodeCount']]
-            )
-        )# Efficient one line code
-
-    with open(features, 'w') as features_file:
-        features_file.write("FeatureIds,FeatureNames\n")
-        features_file.write(
-            "\n".join(
-                [
-                    re.sub(r"[()' ]", "", str(pair))  # Remove parentheses, single quotes, and spaces
-                    for pair in zip(
-                    cloupe.matrices[0]["FeatureIds"][: count_values["FeatureCount"]],
-                    cloupe.matrices[0]["FeatureNames"][: count_values["FeatureCount"]],
-                )
-                ]
-            )
-        )# Using zip command along with list comprehension to convert the two list into strings for the csv as elements
-
-    # Plotting the info
-    spatial_embedding = cloupe.projections['Spatial']
-    plt.scatter(x=spatial_embedding[0], y=spatial_embedding[1])
-    plt.gca().invert_yaxis()
-    plt.show()
-
-    # Final csv addition
-    with open(barcode_clusters, 'w') as barcode_clusters_file:
-        barcode_clusters_file.write("Barcodes,{},{}\n".format(cloupe.celltracks[0]["Name"],cloupe.celltracks[1]["Name"]))
-        barcode_clusters_file.write(
-            "\n".join(
-                [
-                    re.sub(r"[()' ]", "", str(pair))  # Remove parentheses, single quotes, and spaces
-                    for pair in zip(
-                    cloupe.matrices[0]["Barcodes"],
-                    cloupe.celltracks[0]["Values"],
-                    cloupe.celltracks[1]["Values"],
-                )
-                ]
-            )
-        )
-
+    # cloupe_object = Cloupe("/Users/nj9/Downloads/spaceranger210_count_49384_pSKI_SP15018739_GRCh38-2020-A.cloupe")
+    # cloupe_object.barcodes_writer()
+    # cloupe_object.features_writer()
+    # cloupe_object.annotations_writer()
 # Bye-bye
 
 
