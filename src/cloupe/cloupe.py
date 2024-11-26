@@ -194,50 +194,46 @@ class Cloupe(object):
 
     # writing the barcodes to the csv file
     def barcodes_writer(self):
-        barcodes_attributes = vars(self)  # returns a dictionary of attributes
         barcodes = self.cwd + '/barcodes.csv'
         with open(barcodes, 'w', newline="") as barcodes_file:
             # Initialize the CSV writer
             csv_writer = csv.writer(barcodes_file)
             csv_writer.writerow(["Barcodes"])
             csv_writer.writerows(
-                    [[element] for element in barcodes_attributes["matrices"][0]['Barcodes'][:barcodes_attributes["matrices"][0]['BarcodeCount']]]
+                    [[element] for element in self.matrices[0]['Barcodes'][:self.matrices[0]['BarcodeCount']]]
             )  # Efficient one line code
 
     # write the features to the csv file
     def features_writer(self):
-        features_attributes = vars(self)
         features = self.cwd + '/features.csv'
         with open(features, 'w', newline="") as features_file:
             csv_writer = csv.writer(features_file)
             csv_writer.writerow(["FeatureIds", "FeatureNames"])
             csv_writer.writerows([[str(element) for element in pair]  # Remove parentheses, single quotes, and spaces
                         for pair in zip(
-                        features_attributes["matrices"][0]["FeatureIds"][:features_attributes["matrices"][0]["FeatureCount"]],
-                        features_attributes["matrices"][0]["FeatureNames"][:features_attributes["matrices"][0]["FeatureCount"]],
+                        self.matrices[0]["FeatureIds"][:self.matrices[0]["FeatureCount"]],
+                        self.matrices[0]["FeatureNames"][:self.matrices[0]["FeatureCount"]],
                     )])# Using zip command along with list comprehension to convert the two list into strings for the csv as elements
 
     # write annotations
     def annotations_writer(self):
-        annotations_attributes = vars(self)
         annotations = self.cwd + '/annotations.csv'
         with open(annotations, 'w', newline="") as annotations_file:
             csv_writer = csv.writer(annotations_file)
-            csv_writer.writerow(["Barcodes"]+[element["Name"] for element in annotations_attributes["celltracks"]])
+            csv_writer.writerow(["Barcodes"]+[element["Name"] for element in self.celltracks])
             csv_writer.writerows(
                 [
                     [barcode, *values]
                     for barcode, *values in zip(
-                    annotations_attributes["matrices"][0]["Barcodes"],
-                    *(track["Values"] for track in annotations_attributes["celltracks"])
+                    self.matrices[0]["Barcodes"],
+                    *(track["Values"] for track in self.celltracks)
                 )
                 ]
             )
 
     # plotting the spatial info
     def spatial_plot(self):
-        spatial_plot_attributes = vars(self)
-        spatial_embedding = spatial_plot_attributes["projections"]['Spatial']
+        spatial_embedding = self.projections['Spatial']
         plt.scatter(x=spatial_embedding[0], y=spatial_embedding[1])
         plt.gca().invert_yaxis()
         plt.show()
