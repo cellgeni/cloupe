@@ -4,10 +4,10 @@ build-backend = "hatchling.build"
 
 [project]
 name = "cloupe"
-version = "0.1.0"
+dynamic = ["version"]
 authors = [
-    { name="Martin Prete", email="martin.prete@sanger.ac.uk" },
-    { name="Nithin Mathew Joseph", email="nithin.mathew.joseph@sanger.ac.uk" },
+    { name="Martin Prete", email="mp33@sanger.ac.uk" },
+    { name="Nithin Mathew Joseph", email="nj9@sanger.ac.uk" },
 ]
 license = {file = "LICENSE"}
 description = "Cloupe Parser"
@@ -16,7 +16,7 @@ requires-python = ">=3.9"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
-    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)"
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
 ]
@@ -24,3 +24,6 @@ classifiers = [
 [project.urls]
 Homepage = "https://github.com/cellgeni/cloupe"
 Issues = "https://github.com/cellgeni/cloupe/issues"
+
+[tool.hatch.version]
+path = "src/__init__.py"
