@@ -4,6 +4,10 @@ import json
 import logging
 import struct
 import zlib
+
+from fontTools.misc.psOperators import ps_procmark
+
+
 # import matplotlib.pyplot as plt
 # import matplotlib.pyplot as plt
 # import matplotlib.image as mpimg
@@ -231,33 +235,22 @@ class Cloupe(object):
                 ]
             )
 
-    # plotting the spatial info
-    def spatial_projection(self):
-        spatial_plot = self.cwd + '/projection_spatial.csv'
-        spatial_embedding = self.projections['Spatial']
-        projections_1 = [["Barcodes"]+self.matrices[0]["Barcodes"]]
-        for column in range(len(spatial_embedding)):
-            projections_1.append(["d{}".format(column)]+[element for element in spatial_embedding[column]])
-        transposed_projections_1 = zip(*projections_1)
-        with open(spatial_plot, "w", newline="") as spatial_projection_file:
-            csv_writer = csv.writer(spatial_projection_file)
-            csv_writer.writerows(transposed_projections_1)
-
-        # plt.scatter(x=spatial_embedding[0], y=spatial_embedding[1])
-        # plt.gca().invert_yaxis()
-        # plt.show()
-
-    # plotting the tsne info
-    def tsne_projection(self):
-        tsne_plot = self.cwd + '/projection_tsne.csv'
-        tsne_embedding = self.projections['tsne']
-        projections_2 = [["Barcodes"] + self.matrices[0]["Barcodes"]]
-        for column in range(len(tsne_embedding)):
-            projections_2.append(["d{}".format(column)] + [element for element in tsne_embedding[column]])
-        transposed_projections_2 = zip(*projections_2)
-        with open(tsne_plot, "w", newline="") as tsne_projection_file:
-            csv_writer = csv.writer(tsne_projection_file)
-            csv_writer.writerows(transposed_projections_2)
+    # writing csv for the projections
+    def projection_csv(self):
+        projections = {}
+        # loop through all the avaialble projections
+        for projection_name in self.projections.keys():
+            projections[projection_name] = []
+            projection_plot = self.cwd + f"/projection_{projection_name}.csv"
+            projections[projection_name] = [["Barcodes"] + self.matrices[0]["Barcodes"]]
+            # process each column for this projection
+            for column in range(len(self.projections[projection_name])):
+                    projections[projection_name].append(["d{}".format(column)]+[element for element in self.projections[projection_name][column]])
+            projections_transpose = zip(*projections[projection_name])
+            # write csv for this one use projection_name variable as part of the name
+            with open(projection_plot, "w") as projections_file:
+                    csv_writer = csv.writer(projections_file)
+                    csv_writer.writerows(projections_transpose)
 
 
 if __name__=="__main__":
@@ -266,7 +259,7 @@ if __name__=="__main__":
     # cloupe_object.barcodes_writer()
     # cloupe_object.features_writer()
     # cloupe_object.annotations_writer()
-    # cloupe_object.spatial_projection()
+    # cloupe_object.projection_csv()
 # Bye-bye
 
 
