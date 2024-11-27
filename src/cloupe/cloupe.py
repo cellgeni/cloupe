@@ -4,9 +4,9 @@ import json
 import logging
 import struct
 import zlib
-import matplotlib.pyplot as plt
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
+# import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
+# import matplotlib.image as mpimg
 
 
 # https://www.10xgenomics.com/datasets/visium-cytassist-gene-and-protein-expression-library-of-human-tonsil-with-add-on-antibodies-h-e-6-5-mm-ffpe-2-standard
@@ -200,7 +200,7 @@ class Cloupe(object):
             csv_writer = csv.writer(barcodes_file)
             csv_writer.writerow(["Barcodes"])
             csv_writer.writerows(
-                    [[element] for element in self.matrices[0]['Barcodes'][:self.matrices[0]['BarcodeCount']]]
+                    [[element] for element in self.matrices[0]['Barcodes']]
             )  # Efficient one line code
 
     # write the features to the csv file
@@ -211,8 +211,8 @@ class Cloupe(object):
             csv_writer.writerow(["FeatureIds", "FeatureNames"])
             csv_writer.writerows([[str(element) for element in pair]  # Remove parentheses, single quotes, and spaces
                         for pair in zip(
-                        self.matrices[0]["FeatureIds"][:self.matrices[0]["FeatureCount"]],
-                        self.matrices[0]["FeatureNames"][:self.matrices[0]["FeatureCount"]],
+                        self.matrices[0]["FeatureIds"],
+                        self.matrices[0]["FeatureNames"],
                     )])# Using zip command along with list comprehension to convert the two list into strings for the csv as elements
 
     # write annotations
@@ -232,19 +232,41 @@ class Cloupe(object):
             )
 
     # plotting the spatial info
-    def spatial_plot(self):
+    def spatial_projection(self):
+        spatial_plot = self.cwd + '/projection_spatial.csv'
         spatial_embedding = self.projections['Spatial']
-        plt.scatter(x=spatial_embedding[0], y=spatial_embedding[1])
-        plt.gca().invert_yaxis()
-        plt.show()
+        projections_1 = [["Barcodes"]+self.matrices[0]["Barcodes"]]
+        for column in range(len(spatial_embedding)):
+            projections_1.append(["d{}".format(column)]+[element for element in spatial_embedding[column]])
+        transposed_projections_1 = zip(*projections_1)
+        with open(spatial_plot, "w", newline="") as spatial_projection_file:
+            csv_writer = csv.writer(spatial_projection_file)
+            csv_writer.writerows(transposed_projections_1)
+
+        # plt.scatter(x=spatial_embedding[0], y=spatial_embedding[1])
+        # plt.gca().invert_yaxis()
+        # plt.show()
+
+    # plotting the tsne info
+    def tsne_projection(self):
+        tsne_plot = self.cwd + '/projection_tsne.csv'
+        tsne_embedding = self.projections['tsne']
+        projections_2 = [["Barcodes"] + self.matrices[0]["Barcodes"]]
+        for column in range(len(tsne_embedding)):
+            projections_2.append(["d{}".format(column)] + [element for element in tsne_embedding[column]])
+        transposed_projections_2 = zip(*projections_2)
+        with open(tsne_plot, "w", newline="") as tsne_projection_file:
+            csv_writer = csv.writer(tsne_projection_file)
+            csv_writer.writerows(transposed_projections_2)
 
 
 if __name__=="__main__":
     logging.basicConfig(level=logging.INFO, format="[%(asctime)s][%(levelname)s] %(message)s")
-    # cloupe_object = Cloupe("/Users/nj9/Downloads/spaceranger210_count_49384_pSKI_SP15018739_GRCh38-2020-A.cloupe")
+    cloupe_object = Cloupe("/Users/nj9/Downloads/spaceranger210_count_49384_pSKI_SP15018739_GRCh38-2020-A.cloupe")
     # cloupe_object.barcodes_writer()
     # cloupe_object.features_writer()
     # cloupe_object.annotations_writer()
+    # cloupe_object.spatial_projection()
 # Bye-bye
 
 

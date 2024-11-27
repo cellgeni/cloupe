@@ -26,4 +26,4 @@ Homepage = "https://github.com/cellgeni/cloupe"
 Issues = "https://github.com/cellgeni/cloupe/issues"
 
 [tool.hatch.version]
-path = "src/cloupe"
+path = "src/cloupe/__init__.py"
