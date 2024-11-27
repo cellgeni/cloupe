@@ -5,7 +5,6 @@ import logging
 import struct
 import zlib
 
-from fontTools.misc.psOperators import ps_procmark
 
 
 # import matplotlib.pyplot as plt
