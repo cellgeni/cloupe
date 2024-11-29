@@ -5,12 +5,7 @@ import logging
 import struct
 import zlib
 
-
-
-# import matplotlib.pyplot as plt
-# import matplotlib.pyplot as plt
-# import matplotlib.image as mpimg
-
+logging.basicConfig(level=logging.INFO, format="[%(asctime)s][%(levelname)s] %(message)s")
 
 # https://www.10xgenomics.com/datasets/visium-cytassist-gene-and-protein-expression-library-of-human-tonsil-with-add-on-antibodies-h-e-6-5-mm-ffpe-2-standard
 # file_path = "datasets/CytAssist_FFPE_Protein_Expression_Human_Tonsil_cloupe.cloupe"
@@ -145,7 +140,6 @@ class Cloupe(object):
                 as_json=True,
             )
             # now that we have the index block we get the 'userCreated' celltracks
-            self.celltracks = []
             for celltrack in self.next_index_block["CellTracks"]:
                 celltrack["Metadata"] = self.read_block(
                     start=celltrack["Metadata"]["Start"],
@@ -196,9 +190,8 @@ class Cloupe(object):
             return block
 
     # writing the barcodes to the csv file
-    def barcodes_writer(self):
-        barcodes = self.cwd + '/barcodes.csv'
-        with open(barcodes, 'w', newline="") as barcodes_file:
+    def barcodes_writer(self, barcodes = 'barcodes.csv'):
+        with open(barcodes, 'w') as barcodes_file:
             # Initialize the CSV writer
             csv_writer = csv.writer(barcodes_file)
             csv_writer.writerow(["Barcodes"])
@@ -207,21 +200,19 @@ class Cloupe(object):
             )  # Efficient one line code
 
     # write the features to the csv file
-    def features_writer(self):
-        features = self.cwd + '/features.csv'
-        with open(features, 'w', newline="") as features_file:
+    def features_writer(self, features = 'features.csv'):
+        with open(features, 'w') as features_file:
             csv_writer = csv.writer(features_file)
             csv_writer.writerow(["FeatureIds", "FeatureNames"])
-            csv_writer.writerows([[str(element) for element in pair]  # Remove parentheses, single quotes, and spaces
+            csv_writer.writerows([[str(element) for element in pair]
                         for pair in zip(
                         self.matrices[0]["FeatureIds"],
                         self.matrices[0]["FeatureNames"],
                     )])# Using zip command along with list comprehension to convert the two list into strings for the csv as elements
 
     # write annotations
-    def annotations_writer(self):
-        annotations = self.cwd + '/annotations.csv'
-        with open(annotations, 'w', newline="") as annotations_file:
+    def annotations_writer(self, annotations = 'annotations.csv'):
+        with open(annotations, 'w') as annotations_file:
             csv_writer = csv.writer(annotations_file)
             csv_writer.writerow(["Barcodes"]+[element["Name"] for element in self.celltracks])
             csv_writer.writerows(
@@ -237,10 +228,10 @@ class Cloupe(object):
     # writing csv for the projections
     def projection_csv(self):
         projections = {}
-        # loop through all the avaialble projections
+        # loop through all the available projections
         for projection_name in self.projections.keys():
             projections[projection_name] = []
-            projection_plot = self.cwd + f"/projection_{projection_name}.csv"
+            projection_plot = f"projection_{projection_name}.csv"
             projections[projection_name] = [["Barcodes"] + self.matrices[0]["Barcodes"]]
             # process each column for this projection
             for column in range(len(self.projections[projection_name])):
@@ -253,7 +244,6 @@ class Cloupe(object):
 
 
 if __name__=="__main__":
-    logging.basicConfig(level=logging.INFO, format="[%(asctime)s][%(levelname)s] %(message)s")
     cloupe_object = Cloupe("/Users/nj9/Downloads/spaceranger210_count_49384_pSKI_SP15018739_GRCh38-2020-A.cloupe")
     # cloupe_object.barcodes_writer()
     # cloupe_object.features_writer()
